@@ -22,6 +22,14 @@ function App() {
   const [activePage, setActivePage] =
     useState("analyse");
 
+  // NEW
+  const [sidebarOpen, setSidebarOpen] =
+    useState(false);
+
+  const toggleSidebar = () => {
+    setSidebarOpen((prev) => !prev);
+  };
+
   const API_URL = import.meta.env.VITE_API_URL;
 
   const handleGoogleLogin = async (
@@ -71,39 +79,124 @@ function App() {
   const currentUser = profile || user;
 
   return (
-    <div
-      style={{
-        background: "#0f0f0f",
-        minHeight: "100vh",
-      }}
-    >
-      <Sidebar
-        activePage={activePage}
-        onNavigate={setActivePage}
-        user={currentUser}
-        onLogout={logout}
-      />
+    <>
+      <style>{`
+          .mobile-topbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #0f0f0f;
+            border-bottom: 1px solid #222;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            z-index: 50;
+            box-sizing: border-box;
+          }
 
-      <main
+          .hamburger-btn {
+            background: transparent;
+            color: white;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 4px;
+          }
+
+          .mobile-title {
+            margin-left: 16px;
+            color: white;
+            font-size: 26px;
+            font-weight: 700;
+          }
+
+          .main-content {
+            margin-left: 0;
+            min-height: 100vh;
+            background: #0f0f0f;
+            transition: margin-left 0.3s ease;
+            padding-top: 60px;
+          }
+
+          @media (min-width: 768px) {
+            .mobile-topbar {
+              display: none;
+            }
+
+            .main-content {
+              margin-left: 240px;
+              padding-top: 0;
+            }
+          }
+      `}</style>
+
+      <div
         style={{
-          marginLeft: "240px",
-          minHeight: "100vh",
           background: "#0f0f0f",
+          minHeight: "100vh",
         }}
       >
-        {activePage === "analyse" ? (
-          <AnalysePage
-            token={token}
-            user={currentUser}
-          />
-        ) : (
-          <HistoryPage
-            token={token}
-            user={currentUser}
+
+        {/* Mobile Top Bar */}
+        {!sidebarOpen && (
+          <div className="mobile-topbar">
+            <button
+              className="hamburger-btn"
+              onClick={toggleSidebar}
+            >
+              ☰
+            </button>
+
+            <span className="mobile-title">
+              SER
+            </span>
+          </div>
+        )}
+
+        {/* Backdrop */}
+        {sidebarOpen && (
+          <div
+            onClick={() =>
+              setSidebarOpen(false)
+            }
+            style={{
+              position: "fixed",
+              inset: 0,
+              background:
+                "rgba(0,0,0,0.5)",
+              zIndex: 40,
+            }}
           />
         )}
-      </main>
-    </div>
+
+        <Sidebar
+          activePage={activePage}
+          onNavigate={setActivePage}
+          user={currentUser}
+          onLogout={logout}
+          isOpen={sidebarOpen}
+          onClose={() =>
+            setSidebarOpen(false)
+          }
+        />
+
+        <main className="main-content">
+          {activePage === "analyse" ? (
+            <AnalysePage
+              token={token}
+              user={currentUser}
+            />
+          ) : (
+            <HistoryPage
+              token={token}
+              user={currentUser}
+            />
+          )}
+        </main>
+      </div>
+    </>
   );
 }
 
