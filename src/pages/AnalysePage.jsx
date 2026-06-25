@@ -1,4 +1,8 @@
-import { useRef, useState } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import axios from "axios";
 import { Mic } from "lucide-react";
 import EmotionTimeline from "../components/EmotionTimeline";
@@ -12,12 +16,44 @@ export default function AnalysePage({ token }) {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
 
+  const [isRecording, setIsRecording] =
+    useState(false);
+
+  const [recordedBlob, setRecordedBlob] =
+    useState(null);
+
+  const [recordedUrl, setRecordedUrl] =
+    useState(null);
+
+  const [recordingTime, setRecordingTime] =
+    useState(0);
+
   const fileInputRef = useRef(null);
+
+  const mediaRecorderRef = useRef(null);
+
+  const timerRef = useRef(null);
+
+  const chunksRef = useRef([]);
 
   const resetState = () => {
     setFile(null);
     setResult(null);
     setError(null);
+
+    setRecordedBlob(null);
+
+    if (recordedUrl) {
+      URL.revokeObjectURL(recordedUrl);
+    }
+
+    setRecordedUrl(null);
+
+    setIsRecording(false);
+
+    setRecordingTime(0);
+
+    clearInterval(timerRef.current);
 
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
@@ -82,13 +118,171 @@ export default function AnalysePage({ token }) {
     }
   };
 
+  useEffect(() => {
+    return () => {
+      clearInterval(timerRef.current);
+
+      if (
+        mediaRecorderRef.current &&
+        mediaRecorderRef.current.state !==
+          "inactive"
+      ) {
+        mediaRecorderRef.current.stop();
+      }
+
+      if (recordedUrl) {
+        URL.revokeObjectURL(recordedUrl);
+      }
+    };
+  }, [recordedUrl]);
+
+  const startRecording = async () => {
+    if (isRecording) return;
+
+    try {
+      const stream =
+        await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
+
+      const mediaRecorder =
+        new MediaRecorder(stream);
+
+      mediaRecorderRef.current =
+        mediaRecorder;
+
+      chunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) {
+          chunksRef.current.push(e.data);
+        }
+      };
+
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(
+          chunksRef.current,
+          {
+            type: "audio/webm",
+          }
+        );
+
+        const url =
+          URL.createObjectURL(blob);
+
+        setRecordedBlob(blob);
+        setRecordedUrl(url);
+
+        chunksRef.current = [];
+
+        stream
+          .getTracks()
+          .forEach((track) => track.stop());
+      };
+
+      setRecordedBlob(null);
+
+      if (recordedUrl) {
+        URL.revokeObjectURL(recordedUrl);
+        setRecordedUrl(null);
+      }
+
+      setRecordingTime(0);
+      setIsRecording(true);
+
+      mediaRecorder.start();
+
+      timerRef.current = setInterval(() => {
+        setRecordingTime((prev) => {
+          if (prev >= 59) {
+            stopRecording();
+            return 60;
+          }
+
+          return prev + 1;
+        });
+      }, 1000);
+    } catch {
+      setError(
+        "Unable to access microphone."
+      );
+    }
+  };
+
+  const stopRecording = () => {
+    if (
+      mediaRecorderRef.current &&
+      mediaRecorderRef.current.state !==
+        "inactive"
+    ) {
+      mediaRecorderRef.current.stop();
+    }
+
+    clearInterval(timerRef.current);
+
+    setIsRecording(false);
+    setRecordingTime(0);
+  };
+
+  const discardRecording = () => {
+    if (recordedUrl) {
+      URL.revokeObjectURL(recordedUrl);
+    }
+
+    setRecordedBlob(null);
+    setRecordedUrl(null);
+    setResult(null);
+  };
+
+  const submitRecording = async () => {
+    if (!recordedBlob) return;
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const formData = new FormData();
+
+      formData.append(
+        "file",
+        recordedBlob,
+        "recording.webm"
+      );
+
+      const { data } = await axios.post(
+        `${API_URL}/api/v1/predict/timeline`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type":
+              "multipart/form-data",
+          },
+        }
+      );
+
+      setResult(data);
+    } catch (err) {
+      setError(
+        err?.response?.data?.detail ||
+          err?.message ||
+          "Failed to analyse recording."
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const tabButtonStyle = (active) => ({
     padding: "0.8rem 1.4rem",
     borderRadius: "10px",
     border: active ? "1px solid white" : "1px solid #444",
     background: active ? "#fff" : "transparent",
     color: active ? "#000" : "#9ca3af",
-    cursor: "pointer",
+    cursor: isRecording
+      ? "not-allowed"
+      : "pointer",
+    opacity: isRecording ? 0.5 : 1,
     fontSize: "0.95rem",
     fontWeight: 600,
     transition: "0.2s",
@@ -130,6 +324,7 @@ export default function AnalysePage({ token }) {
           <button
             style={tabButtonStyle(activeTab === "upload")}
             onClick={() => switchTab("upload")}
+            disabled={isRecording}
           >
             Upload File
           </button>
@@ -137,6 +332,7 @@ export default function AnalysePage({ token }) {
           <button
             style={tabButtonStyle(activeTab === "record")}
             onClick={() => switchTab("record")}
+            disabled={isRecording}
           >
             Record Audio
           </button>
@@ -258,36 +454,214 @@ export default function AnalysePage({ token }) {
         {activeTab === "record" && (
           <div
             style={{
-              minHeight: "300px",
+              minHeight: "320px",
+              background: "#171717",
+              borderRadius: "16px",
+              border: "1px solid #2d2d2d",
+              padding: "2rem",
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
               alignItems: "center",
-              gap: "1rem",
-              background: "#171717",
-              borderRadius: "16px",
-              border: "1px solid #2d2d2d",
+              gap: "1.5rem",
             }}
           >
-            <Mic size={64} color="#6366f1" />
+            {!isRecording &&
+              !recordedBlob && (
+                <>
+                  <Mic
+                    size={64}
+                    color="#ef4444"
+                  />
 
-            <h2
+                  <button
+                    onClick={
+                      startRecording
+                    }
+                    style={{
+                      background:
+                        "#ef4444",
+                      color: "white",
+                      border: "none",
+                      padding:
+                        "1rem 2rem",
+                      borderRadius:
+                        "10px",
+                      fontSize:
+                        "1rem",
+                      fontWeight: 600,
+                      cursor:
+                        "pointer",
+                    }}
+                  >
+                    Start Recording
+                  </button>
+                </>
+              )}
+
+            {isRecording && (
+              <>
+                <Mic
+                  size={64}
+                  color="#ef4444"
+                />
+
+                <div
+                  style={{
+                    fontSize: "2rem",
+                    fontWeight: 700,
+                  }}
+                >
+                  {String(
+                    Math.floor(
+                      recordingTime / 60
+                    )
+                  ).padStart(2, "0")}
+                  :
+                  {String(
+                    recordingTime % 60
+                  ).padStart(2, "0")}
+                </div>
+
+                <div
+                  style={{
+                    width: "100%",
+                    height: 6,
+                    background: "#333",
+                    borderRadius: 999,
+                    overflow: "hidden",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: `${
+                        (recordingTime /
+                          60) *
+                        100
+                      }%`,
+                      height: "100%",
+                      background:
+                        "#ef4444",
+                      transition:
+                        "width 1s linear",
+                    }}
+                  />
+                </div>
+
+                <button
+                  onClick={
+                    stopRecording
+                  }
+                  style={{
+                    background:
+                      "#ef4444",
+                    color: "white",
+                    border: "none",
+                    padding:
+                      "1rem 2rem",
+                    borderRadius:
+                      "10px",
+                    fontSize:
+                      "1rem",
+                    fontWeight: 600,
+                    cursor:
+                      "pointer",
+                  }}
+                >
+                  Stop Recording
+                </button>
+              </>
+            )}
+
+            {!isRecording &&
+              recordedBlob && (
+                <>
+                  <audio
+                    controls
+                    src={recordedUrl}
+                    style={{
+                      width: "100%",
+                    }}
+                  />
+
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "1rem",
+                      width: "100%",
+                    }}
+                  >
+                    <button
+                      onClick={
+                        submitRecording
+                      }
+                      disabled={
+                        isLoading
+                      }
+                      style={{
+                        flex: 1,
+                        background:
+                          "#6366f1",
+                        color:
+                          "white",
+                        border:
+                          "none",
+                        padding:
+                          "1rem",
+                        borderRadius:
+                          "10px",
+                        fontWeight: 600,
+                        cursor:
+                          "pointer",
+                      }}
+                    >
+                      {isLoading
+                        ? "Analysing..."
+                        : "Submit"}
+                    </button>
+
+                    <button
+                      onClick={
+                        discardRecording
+                      }
+                      style={{
+                        flex: 1,
+                        background:
+                          "transparent",
+                        color:
+                          "#ef4444",
+                        border:
+                          "1px solid #ef4444",
+                        padding:
+                          "1rem",
+                        borderRadius:
+                          "10px",
+                        fontWeight: 600,
+                        cursor:
+                          "pointer",
+                      }}
+                    >
+                      Discard
+                    </button>
+                  </div>
+                </>
+              )}
+          {error && (
+            <div
               style={{
-                margin: 0,
-                fontWeight: 600,
+                width: "100%",
+                boxSizing: "border-box",
+                marginTop: "1rem",
+                color: "#ef4444",
+                background: "#2b1111",
+                border: "1px solid #7f1d1d",
+                borderRadius: "10px",
+                padding: "1rem",
               }}
             >
-              Mic recording coming soon
-            </h2>
-
-            <p
-              style={{
-                color: "#9ca3af",
-                margin: 0,
-              }}
-            >
-              Recording support will be available in a future update.
-            </p>
+              {error}
+            </div>
+          )}
           </div>
         )}
 

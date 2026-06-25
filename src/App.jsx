@@ -1,6 +1,6 @@
 // src/App.jsx
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 
 import useAuth from "./auth/useAuth";
@@ -19,8 +19,9 @@ function App() {
     logout,
   } = useAuth();
 
-  const [activePage, setActivePage] =
-    useState("analyse");
+  const [activePage, setActivePage] = useState(() => {
+    return localStorage.getItem("activePage") || "analyse";
+  });
 
   // NEW
   const [sidebarOpen, setSidebarOpen] =
@@ -66,6 +67,10 @@ function App() {
       );
     }
   };
+  
+  useEffect(() => {
+    localStorage.setItem("activePage", activePage);
+  }, [activePage]);
 
   if (!isLoggedIn) {
     return (
@@ -78,6 +83,12 @@ function App() {
 
   const currentUser = profile || user;
 
+  const handleLogout = () => {
+    setActivePage("analyse");
+    logout();
+  };
+
+  
   return (
     <>
       <style>{`
@@ -175,7 +186,7 @@ function App() {
           activePage={activePage}
           onNavigate={setActivePage}
           user={currentUser}
-          onLogout={logout}
+          onLogout={handleLogout}
           isOpen={sidebarOpen}
           onClose={() =>
             setSidebarOpen(false)
