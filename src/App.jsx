@@ -1,10 +1,13 @@
 // src/App.jsx
 
+import { useState } from "react";
 import axios from "axios";
 
 import useAuth from "./auth/useAuth";
 import LandingPage from "./pages/LandingPage";
-import AppPage from "./pages/AppPage";
+import Sidebar from "./components/Sidebar";
+import AnalysePage from "./pages/AnalysePage";
+import HistoryPage from "./pages/HistoryPage";
 
 function App() {
   const {
@@ -15,6 +18,9 @@ function App() {
     loginWithToken,
     logout,
   } = useAuth();
+
+  const [activePage, setActivePage] =
+    useState("analyse");
 
   const API_URL = import.meta.env.VITE_API_URL;
 
@@ -53,22 +59,51 @@ function App() {
     }
   };
 
-  if (isLoggedIn) {
+  if (!isLoggedIn) {
     return (
-      <AppPage
-        token={token}
-        user={user}
-        profile={profile}
-        onLogout={logout}
+      <LandingPage
+        onGoogleLogin={handleGoogleLogin}
+        onGuestLogin={handleGuestLogin}
       />
     );
   }
 
+  const currentUser = profile || user;
+
   return (
-    <LandingPage
-      onGoogleLogin={handleGoogleLogin}
-      onGuestLogin={handleGuestLogin}
-    />
+    <div
+      style={{
+        background: "#0f0f0f",
+        minHeight: "100vh",
+      }}
+    >
+      <Sidebar
+        activePage={activePage}
+        onNavigate={setActivePage}
+        user={currentUser}
+        onLogout={logout}
+      />
+
+      <main
+        style={{
+          marginLeft: "240px",
+          minHeight: "100vh",
+          background: "#0f0f0f",
+        }}
+      >
+        {activePage === "analyse" ? (
+          <AnalysePage
+            token={token}
+            user={currentUser}
+          />
+        ) : (
+          <HistoryPage
+            token={token}
+            user={currentUser}
+          />
+        )}
+      </main>
+    </div>
   );
 }
 
