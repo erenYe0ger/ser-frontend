@@ -25,103 +25,32 @@ export default function Sidebar({
   const userType =
     user?.user_type === "google" ? "Google" : "Guest";
 
-  const sidebarTransform = isOpen
-    ? "translateX(0)"
-    : "translateX(-100%)";
-
   return (
     <>
-      <style>{`
-        .sidebar {
-          transform: ${sidebarTransform};
-        }
-
-        .sidebar-close {
-          display: block;
-        }
-
-        @media (min-width: 768px) {
-          .sidebar {
-            transform: translateX(0) !important;
-          }
-
-          .sidebar-close {
-            display: none;
-          }
-        }
-      `}</style>
-
       <aside
-        className="sidebar"
-        style={{
-          width: 240,
-          height: "100vh",
-          position: "fixed",
-          left: 0,
-          top: 0,
-          background: "#0f0f0f",
-          borderRight: "1px solid #222",
-          color: "#fff",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          boxSizing: "border-box",
-          transition: "transform 0.3s ease",
-          zIndex: 45,
-        }}
+        className={`w-[240px] h-screen fixed left-0 top-0 bg-[#0f0f0f] border-r border-[#222] text-white flex flex-col justify-between box-border transition-transform duration-300 ease-in-out z-[45] md:translate-x-0 ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
       >
         <button
-          className="sidebar-close"
+          className="sidebar-close absolute top-3 right-3 bg-transparent text-white text-[1.2rem] border-none cursor-pointer p-2 md:hidden"
           onClick={onClose}
-          style={{
-            position: "absolute",
-            top: 12,
-            right: 12,
-            background: "transparent",
-            color: "#fff",
-            fontSize: "1.2rem",
-            border: "none",
-            cursor: "pointer",
-            padding: 8,
-          }}
         >
           ×
         </button>
 
         <div>
-          <div
-            style={{
-              padding: "28px 24px",
-              borderBottom: "1px solid #1c1c1c",
-            }}
-          >
-            <div
-              style={{
-                fontSize: 28,
-                fontWeight: 700,
-                letterSpacing: "0.5px",
-              }}
-            >
+          <div className="p-[28px_24px] border-b border-[#1c1c1c]">
+            <div className="text-[28px] font-bold tracking-[0.5px]">
               SER
             </div>
 
-            <div
-              style={{
-                marginTop: 6,
-                fontSize: 13,
-                color: "#9ca3af",
-                lineHeight: 1.5,
-              }}
-            >
+            <div className="mt-1.5 text-[13px] text-[#9ca3af] leading-[1.5]">
               Speech Emotion Recognition
             </div>
           </div>
 
-          <div
-            style={{
-              paddingTop: 18,
-            }}
-          >
+          <div className="pt-4.5">
             {navItems.map((item) => {
               const Icon = item.icon;
               const active = activePage === item.key;
@@ -133,41 +62,18 @@ export default function Sidebar({
                     onNavigate?.(item.key);
                     onClose?.();
                   }}
-                  onMouseEnter={(e) => {
-                    if (!active) {
-                      e.currentTarget.style.background =
-                        "#171717";
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!active) {
-                      e.currentTarget.style.background =
-                        "transparent";
-                    }
-                  }}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 12,
-                    padding: "14px 22px",
-                    cursor: "pointer",
-                    userSelect: "none",
-                    transition: "all 0.2s ease",
-                    borderLeft: active
-                      ? "3px solid #6366f1"
-                      : "3px solid transparent",
-                    background: active
-                      ? "#1a1a1a"
-                      : "transparent",
-                  }}
+                  className={`flex items-center gap-3 p-[14px_22px] cursor-pointer select-none transition-all duration-200 border-l-3 ${
+                    active
+                      ? "border-l-[#6366f1] bg-[#1a1a1a]"
+                      : "border-l-transparent bg-transparent hover:bg-[#171717]"
+                  }`}
                 >
                   <Icon size={19} />
 
                   <span
-                    style={{
-                      fontSize: 15,
-                      fontWeight: active ? 600 : 500,
-                    }}
+                    className={`text-[15px] ${
+                      active ? "font-semibold" : "font-medium"
+                    }`}
                   >
                     {item.label}
                   </span>
@@ -177,44 +83,16 @@ export default function Sidebar({
           </div>
         </div>
 
-        <div
-          style={{
-            borderTop: "1px solid #1c1c1c",
-            padding: 18,
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 12,
-            }}
-          >
+        <div className="border-t border-[#1c1c1c] p-4.5">
+          <div className="flex items-center gap-3">
             {user?.picture ? (
               <img
                 src={user.picture}
                 alt="Profile"
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: "50%",
-                  objectFit: "cover",
-                  flexShrink: 0,
-                }}
+                className="w-9 h-9 rounded-full object-cover shrink-0"
               />
             ) : (
-              <div
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: "50%",
-                  background: "#222",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexShrink: 0,
-                }}
-              >
+              <div className="w-9 h-9 rounded-full bg-[#222] flex items-center justify-center shrink-0">
                 <User
                   size={18}
                   color="#cfcfcf"
@@ -222,36 +100,15 @@ export default function Sidebar({
               </div>
             )}
 
-            <div
-              style={{
-                minWidth: 0,
-                flex: 1,
-              }}
-            >
+            <div className="min-w-0 flex-1">
               <div
                 title={userName}
-                style={{
-                  fontSize: 14,
-                  fontWeight: 600,
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
+                className="text-sm font-semibold whitespace-nowrap overflow-hidden text-ellipsis"
               >
                 {userName}
               </div>
 
-              <div
-                style={{
-                  display: "inline-block",
-                  marginTop: 4,
-                  padding: "2px 8px",
-                  borderRadius: 999,
-                  fontSize: 11,
-                  background: "#1c1c1c",
-                  color: "#bdbdbd",
-                }}
-              >
+              <div className="inline-block mt-1 padding-[2px_8px] px-2 py-0.5 rounded-full text-[11px] bg-[#1c1c1c] text-[#bdbdbd]">
                 {userType}
               </div>
             </div>
@@ -259,34 +116,7 @@ export default function Sidebar({
 
           <button
             onClick={onLogout}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background =
-                "#2b1616";
-              e.currentTarget.style.color =
-                "#ef4444";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background =
-                "transparent";
-              e.currentTarget.style.color =
-                "#cfcfcf";
-            }}
-            style={{
-              marginTop: 18,
-              width: "100%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 8,
-              background: "transparent",
-              border: "1px solid #2a2a2a",
-              color: "#cfcfcf",
-              padding: "10px 12px",
-              borderRadius: 8,
-              cursor: "pointer",
-              transition: "all 0.2s ease",
-              fontSize: 14,
-            }}
+            className="mt-4.5 w-full flex items-center justify-center gap-2 bg-transparent border border-[#2a2a2a] text-[#cfcfcf] p-[10px_12px] rounded-log rounded-grow rounded-md cursor-pointer transition-all duration-200 text-sm hover:bg-[#2b1616] hover:text-[#ef4444]"
           >
             <LogOut size={16} />
             Logout

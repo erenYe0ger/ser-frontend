@@ -29,24 +29,15 @@ const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
         const data = payload[0].payload;
         return (
-            <div
-                style={{
-                    background: "#18181b",
-                    border: "1px solid #27272a",
-                    padding: "0.5rem 0.75rem",
-                    borderRadius: "8px",
-                    color: "#ffffff",
-                    fontSize: "0.85rem",
-                }}
-            >
-                <div style={{ fontWeight: 600 }}>
+            <div className="bg-[#18181b] border border-[#27272a] p-2 rounded-lg text-white text-[0.85rem]">
+                <div className="font-semibold">
                     {String(data.emotion).charAt(0).toUpperCase() +
                         String(data.emotion).slice(1)}
                 </div>
-                <div style={{ color: "#a1a1aa" }}>
+                <div className="text-[#a1a1aa]">
                     Confidence: {(data.confidence * 100).toFixed(1)}%
                 </div>
-                <div style={{ color: "#a1a1aa", fontSize: "0.75rem" }}>
+                <div className="text-[#a1a1aa] text-[0.75rem]">
                     Time: {data.time.toFixed(1)}s
                 </div>
             </div>
@@ -144,24 +135,9 @@ export default function EmotionTimeline({ timelineData = [], audioUrl }) {
     }, []);
 
     return (
-        <div
-            style={{
-                background: "#0f0f0f",
-                color: "#ffffff",
-                fontFamily: "Inter, system-ui, sans-serif",
-                padding: "1.5rem",
-                borderRadius: "16px",
-                display: "flex",
-                flexDirection: "column",
-                gap: "1.5rem",
-                width: "100%",
-                boxSizing: "border-box",
-            }}
-        >
+        <div className="bg-[#0f0f0f] text-white font-sans p-6 rounded-2xl flex flex-col gap-6 w-full box-border">
             {/* 3. Recharts Composed Chart Block */}
-            <div
-                style={{ width: "100%", height: "220px", position: "relative" }}
-            >
+            <div className="w-full h-[220px] relative">
                 <ResponsiveContainer width="100%" height="100%">
                     <ComposedChart
                         data={chartData}
@@ -223,17 +199,7 @@ export default function EmotionTimeline({ timelineData = [], audioUrl }) {
             </div>
 
             {/* 4. Custom Dark Audio Player Section */}
-            <div
-                style={{
-                    background: "#18181b",
-                    border: "1px solid #27272a",
-                    padding: "1rem",
-                    borderRadius: "12px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "1rem",
-                }}
-            >
+            <div className="bg-[#18181b] border border-[#27272a] p-4 rounded-xl flex flex-col gap-4">
                 <audio
                     ref={audioRef}
                     src={audioUrl}
@@ -241,29 +207,11 @@ export default function EmotionTimeline({ timelineData = [], audioUrl }) {
                     onLoadedMetadata={handleLoadedMetadata}
                 />
 
-                <div
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "1rem",
-                    }}
-                >
+                <div className="flex items-center gap-4">
                     {/* Play/Pause Action Controller */}
                     <button
                         onClick={togglePlay}
-                        style={{
-                            background: "#ffffff",
-                            color: "#0f0f0f",
-                            border: "none",
-                            borderRadius: "50%",
-                            width: "36px",
-                            height: "36px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            cursor: "pointer",
-                            transition: "transform 0.1s ease",
-                        }}
+                        className="bg-white text-[#0f0f0f] border-none rounded-full w-9 h-9 flex items-center justify-center cursor-pointer transition-transform duration-100 ease-out"
                     >
                         {isPlaying ? (
                             <Pause size={18} fill="#0f0f0f" />
@@ -271,54 +219,35 @@ export default function EmotionTimeline({ timelineData = [], audioUrl }) {
                             <Play
                                 size={18}
                                 fill="#0f0f0f"
-                                style={{ marginLeft: "2px" }}
+                                className="ml-0.5"
                             />
                         )}
                     </button>
 
                     {/* Time Marker Elements */}
-                    <div
-                        style={{
-                            fontSize: "0.85rem",
-                            fontWeight: "500",
-                            color: "#e4e4e7",
-                            minWidth: "85px",
-                        }}
-                    >
+                    <div className="text-[0.85rem] font-medium text-[#e4e4e7] min-w-[85px]">
                         {formatTime(currentTime)}{" "}
-                        <span style={{ color: "#52525b" }}>/</span>{" "}
+                        <span className="text-[#52525b]">/</span>{" "}
                         {formatTime(duration)}
                     </div>
 
-                    {/* Progress Seek Bar Bar Layer with Simulated Waveform CSS/SVG pattern Background */}
+                    {/* Progress Seek Bar Bar Layer with Simulated Waveform Background */}
                     <div
                         onClick={handleSeek}
+                        className="flex-1 h-10 bg-[#09090b] rounded-md relative cursor-pointer overflow-hidden border border-[#27272a]"
                         style={{
-                            flex: 1,
-                            height: "40px",
-                            background: "#09090b",
-                            borderRadius: "6px",
-                            position: "relative",
-                            cursor: "pointer",
-                            overflow: "hidden",
-                            border: "1px solid #27272a",
                             backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='6' height='40'><rect x='2' y='8' width='2' height='24' fill='%233f3f46'/></svg>")`,
                             backgroundRepeat: "repeat-x",
                         }}
                     >
                         {/* Active Playback Tracker Mask overlay */}
                         <div
+                            className="absolute left-0 top-0 bottom-0 border-r-2 border-white pointer-events-none"
                             style={{
-                                position: "absolute",
-                                left: 0,
-                                top: 0,
-                                bottom: 0,
                                 width: `${duration ? (currentTime / duration) * 100 : 0}%`,
                                 background: "rgba(255, 255, 255, 0.12)",
-                                borderRight: "2px solid #ffffff",
                                 backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='6' height='40'><rect x='2' y='8' width='2' height='24' fill='%23ffffff'/></svg>")`,
                                 backgroundRepeat: "repeat-x",
-                                pointerEvents: "none",
                             }}
                         />
                     </div>
@@ -326,14 +255,7 @@ export default function EmotionTimeline({ timelineData = [], audioUrl }) {
             </div>
 
             {/* 5. Audio Emotion Segment Micro Pills Footer display */}
-            <div
-                style={{
-                    display: "flex",
-                    gap: "0.75rem",
-                    flexWrap: "wrap",
-                    paddingTop: "0.5rem",
-                }}
-            >
+            <div className="flex gap-3 flex-wrap pt-2">
                 {timelineData.map((seg, idx) => {
                     const start = Number(seg.start_time);
                     const end = Number(seg.end_time);
@@ -344,44 +266,28 @@ export default function EmotionTimeline({ timelineData = [], audioUrl }) {
                     return (
                         <div
                             key={idx}
+                            className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-[0.8rem] transition-all duration-200 ${
+                                isActive
+                                    ? "bg-white/5 text-white font-semibold"
+                                    : "bg-[#141416] border border-[#242427] text-[#a1a1aa] font-normal"
+                            }`}
                             style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "0.5rem",
-                                background: isActive
-                                    ? "rgba(255,255,255,0.07)"
-                                    : "#141416",
-                                border: isActive
-                                    ? `1px solid ${targetColor}`
-                                    : "1px solid #242427",
-                                padding: "0.4rem 0.8rem",
-                                borderRadius: "100px",
-                                fontSize: "0.8rem",
-                                color: isActive ? "#ffffff" : "#a1a1aa",
-                                fontWeight: isActive ? "600" : "400",
-                                transition: "all 0.2s ease",
-                                boxShadow: isActive
-                                    ? `0 0 12px ${targetColor}33`
-                                    : "none",
+                                border: isActive ? `1px solid ${targetColor}` : undefined,
+                                boxShadow: isActive ? `0 0 12px ${targetColor}33` : "none",
                             }}
                         >
                             {/* Dynamic Emotion Colored Indicator Dot */}
                             <span
-                                style={{
-                                    width: "7px",
-                                    height: "7px",
-                                    borderRadius: "50%",
-                                    background: targetColor,
-                                    display: "inline-block",
-                                }}
+                                className="w-1.5 h-1.5 rounded-full inline-block"
+                                style={{ background: targetColor }}
                             />
                             <span>{capitalize(seg.emotion)}</span>
-                            <span style={{ color: "#52525b" }}>•</span>
+                            <span className="text-[#52525b]">•</span>
                             <span>
                                 {start.toFixed(1)}s – {end.toFixed(1)}s
                             </span>
-                            <span style={{ color: "#52525b" }}>•</span>
-                            <span style={{ opacity: 0.85 }}>
+                            <span className="text-[#52525b]">•</span>
+                            <span className="opacity-85">
                                 {(Number(seg.confidence) * 100).toFixed(0)}%
                             </span>
                         </div>

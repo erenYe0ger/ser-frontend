@@ -91,76 +91,19 @@ function App() {
   
   return (
     <>
-      <style>{`
-          .mobile-topbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 60px;
-            background: #0f0f0f;
-            border-bottom: 1px solid #222;
-            display: flex;
-            align-items: center;
-            padding: 0 16px;
-            z-index: 50;
-            box-sizing: border-box;
-          }
-
-          .hamburger-btn {
-            background: transparent;
-            color: white;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 4px;
-          }
-
-          .mobile-title {
-            margin-left: 16px;
-            color: white;
-            font-size: 26px;
-            font-weight: 700;
-          }
-
-          .main-content {
-            margin-left: 0;
-            min-height: 100vh;
-            background: #0f0f0f;
-            transition: margin-left 0.3s ease;
-            padding-top: 60px;
-          }
-
-          @media (min-width: 768px) {
-            .mobile-topbar {
-              display: none;
-            }
-
-            .main-content {
-              margin-left: 240px;
-              padding-top: 0;
-            }
-          }
-      `}</style>
-
-      <div
-        style={{
-          background: "#0f0f0f",
-          minHeight: "100vh",
-        }}
-      >
+      <div className="bg-[#0f0f0f] min-h-screen">
 
         {/* Mobile Top Bar */}
         {!sidebarOpen && (
-          <div className="mobile-topbar">
+          <div className="fixed top-0 left-0 right-0 h-[60px] bg-[#0f0f0f] border-b border-[#222] flex items-center px-4 z-50 box-border md:hidden">
             <button
-              className="hamburger-btn"
+              className="bg-transparent text-white border-none text-[1.5rem] cursor-pointer p-1"
               onClick={toggleSidebar}
             >
               ☰
             </button>
 
-            <span className="mobile-title">
+            <span className="ml-4 text-white text-[26px] font-bold">
               SER
             </span>
           </div>
@@ -172,13 +115,7 @@ function App() {
             onClick={() =>
               setSidebarOpen(false)
             }
-            style={{
-              position: "fixed",
-              inset: 0,
-              background:
-                "rgba(0,0,0,0.5)",
-              zIndex: 40,
-            }}
+            className="fixed inset-0 bg-black/50 z-40"
           />
         )}
 
@@ -193,7 +130,7 @@ function App() {
           }
         />
 
-        <main className="main-content">
+        <main className="ml-0 min-h-screen bg-[#0f0f0f] transition-[margin-left] duration-300 ease-out pt-[60px] md:ml-[240px] md:pt-0">
           {activePage === "analyse" ? (
             <AnalysePage
               token={token}

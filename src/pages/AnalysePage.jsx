@@ -273,56 +273,20 @@ export default function AnalysePage({ token }) {
     }
   };
 
-  const tabButtonStyle = (active) => ({
-    padding: "0.8rem 1.4rem",
-    borderRadius: "10px",
-    border: active ? "1px solid white" : "1px solid #444",
-    background: active ? "#fff" : "transparent",
-    color: active ? "#000" : "#9ca3af",
-    cursor: isRecording
-      ? "not-allowed"
-      : "pointer",
-    opacity: isRecording ? 0.5 : 1,
-    fontSize: "0.95rem",
-    fontWeight: 600,
-    transition: "0.2s",
-  });
-
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#0f0f0f",
-        color: "white",
-        padding: "2rem",
-      }}
-    >
-      <div
-        style={{
-          maxWidth: "900px",
-          margin: "0 auto",
-        }}
-      >
-        <h1
-          style={{
-            margin: 0,
-            marginBottom: "2rem",
-            fontSize: "2rem",
-            fontWeight: 700,
-          }}
-        >
+    <div className="min-h-screen bg-[#0f0f0f] text-white p-8">
+      <div className="max-w-[900px] mx-auto">
+        <h1 className="m-0 mb-8 text-[2rem] font-bold">
           Analyse Audio
         </h1>
 
-        <div
-          style={{
-            display: "flex",
-            gap: "1rem",
-            marginBottom: "2rem",
-          }}
-        >
+        <div className="flex gap-4 mb-8">
           <button
-            style={tabButtonStyle(activeTab === "upload")}
+            className={`p-[0.8rem_1.4rem] rounded-[10px] text-[0.95rem] font-semibold transition-all duration-200 ${
+              activeTab === "upload"
+                ? "border border-white bg-white text-black"
+                : "border border-[#444] bg-transparent text-[#9ca3af]"
+            } ${isRecording ? "cursor-not-allowed opacity-50" : "cursor-pointer opacity-100"}`}
             onClick={() => switchTab("upload")}
             disabled={isRecording}
           >
@@ -330,7 +294,11 @@ export default function AnalysePage({ token }) {
           </button>
 
           <button
-            style={tabButtonStyle(activeTab === "record")}
+            className={`p-[0.8rem_1.4rem] rounded-[10px] text-[0.95rem] font-semibold transition-all duration-200 ${
+              activeTab === "record"
+                ? "border border-white bg-white text-black"
+                : "border border-[#444] bg-transparent text-[#9ca3af]"
+            } ${isRecording ? "cursor-not-allowed opacity-50" : "cursor-pointer opacity-100"}`}
             onClick={() => switchTab("record")}
             disabled={isRecording}
           >
@@ -344,57 +312,22 @@ export default function AnalysePage({ token }) {
               onClick={() => fileInputRef.current?.click()}
               onDrop={handleDrop}
               onDragOver={(e) => e.preventDefault()}
-              style={{
-                border: "2px dashed #333",
-                borderRadius: "16px",
-                minHeight: "240px",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                textAlign: "center",
-                cursor: "pointer",
-                transition: "0.2s",
-                background: "#171717",
-                padding: "2rem",
-                color: "#d1d5db",
-                fontSize: "1rem",
-              }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.borderColor = "#6366f1")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.borderColor = "#333")
-              }
+              className="border-2 border-dashed border-[#333] hover:border-[#6366f1] rounded-[16px] min-h-[240px] flex justify-center items-center text-center cursor-pointer transition-colors duration-200 bg-[#171717] p-8 text-[#d1d5db] text-base"
             >
               <div>
                 {file ? (
                   <>
-                    <div
-                      style={{
-                        fontSize: "3rem",
-                        marginBottom: "1rem",
-                      }}
-                    >
+                    <div className="text-[3rem] mb-4">
                       🎵
                     </div>
 
-                    <div
-                      style={{
-                        color: "#fff",
-                        fontWeight: 600,
-                      }}
-                    >
+                    <div className="text-white font-semibold">
                       {file.name}
                     </div>
                   </>
                 ) : (
                   <>
-                    <div
-                      style={{
-                        fontSize: "3rem",
-                        marginBottom: "1rem",
-                      }}
-                    >
+                    <div className="text-[3rem] mb-1">
                       📁
                     </div>
 
@@ -409,7 +342,7 @@ export default function AnalysePage({ token }) {
                 ref={fileInputRef}
                 type="file"
                 accept="audio/*"
-                style={{ display: "none" }}
+                className="hidden"
                 onChange={(e) => handleFile(e.target.files[0])}
               />
             </div>
@@ -417,34 +350,15 @@ export default function AnalysePage({ token }) {
             <button
               onClick={handleAnalyse}
               disabled={!file || isLoading}
-              style={{
-                width: "100%",
-                marginTop: "1.5rem",
-                padding: "1rem",
-                background: !file || isLoading ? "#3f3f46" : "#6366f1",
-                color: "white",
-                border: "none",
-                borderRadius: "10px",
-                fontSize: "1rem",
-                fontWeight: 600,
-                cursor: !file || isLoading ? "not-allowed" : "pointer",
-                transition: "0.2s",
-              }}
+              className={`w-full mt-6 p-4 text-white border-none rounded-[10px] text-base font-semibold transition-colors duration-200 ${
+                !file || isLoading ? "bg-[#3f3f46] cursor-not-allowed" : "bg-[#6366f1] cursor-pointer"
+              }`}
             >
               {isLoading ? "Analysing..." : "Analyse"}
             </button>
 
             {error && (
-              <div
-                style={{
-                  marginTop: "1rem",
-                  color: "#ef4444",
-                  background: "#2b1111",
-                  border: "1px solid #7f1d1d",
-                  borderRadius: "10px",
-                  padding: "1rem",
-                }}
-              >
+              <div className="mt-4 text-[#ef4444] bg-[#2b1111] border border-[#7f1d1d] rounded-[10px] p-4">
                 {error}
               </div>
             )}
@@ -452,20 +366,7 @@ export default function AnalysePage({ token }) {
         )}
 
         {activeTab === "record" && (
-          <div
-            style={{
-              minHeight: "320px",
-              background: "#171717",
-              borderRadius: "16px",
-              border: "1px solid #2d2d2d",
-              padding: "2rem",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
-              gap: "1.5rem",
-            }}
-          >
+          <div className="min-h-[320px] bg-[#171717] rounded-[16px] border border-[#2d2d2d] p-8 flex flex-col justify-center items-center gap-6">
             {!isRecording &&
               !recordedBlob && (
                 <>
@@ -478,21 +379,7 @@ export default function AnalysePage({ token }) {
                     onClick={
                       startRecording
                     }
-                    style={{
-                      background:
-                        "#ef4444",
-                      color: "white",
-                      border: "none",
-                      padding:
-                        "1rem 2rem",
-                      borderRadius:
-                        "10px",
-                      fontSize:
-                        "1rem",
-                      fontWeight: 600,
-                      cursor:
-                        "pointer",
-                    }}
+                    className="bg-[#ef4444] text-white border-none p-[1rem_2rem] rounded-[10px] text-base font-semibold cursor-pointer"
                   >
                     Start Recording
                   </button>
@@ -506,12 +393,7 @@ export default function AnalysePage({ token }) {
                   color="#ef4444"
                 />
 
-                <div
-                  style={{
-                    fontSize: "2rem",
-                    fontWeight: 700,
-                  }}
-                >
+                <div className="text-[2rem] font-bold">
                   {String(
                     Math.floor(
                       recordingTime / 60
@@ -523,27 +405,15 @@ export default function AnalysePage({ token }) {
                   ).padStart(2, "0")}
                 </div>
 
-                <div
-                  style={{
-                    width: "100%",
-                    height: 6,
-                    background: "#333",
-                    borderRadius: 999,
-                    overflow: "hidden",
-                  }}
-                >
+                <div className="w-full h-1.5 bg-[#333] rounded-full overflow-hidden">
                   <div
+                    className="h-full bg-[#ef4444] transition-[width] duration-1000 linear"
                     style={{
                       width: `${
                         (recordingTime /
                           60) *
                         100
                       }%`,
-                      height: "100%",
-                      background:
-                        "#ef4444",
-                      transition:
-                        "width 1s linear",
                     }}
                   />
                 </div>
@@ -552,21 +422,7 @@ export default function AnalysePage({ token }) {
                   onClick={
                     stopRecording
                   }
-                  style={{
-                    background:
-                      "#ef4444",
-                    color: "white",
-                    border: "none",
-                    padding:
-                      "1rem 2rem",
-                    borderRadius:
-                      "10px",
-                    fontSize:
-                      "1rem",
-                    fontWeight: 600,
-                    cursor:
-                      "pointer",
-                  }}
+                  className="bg-[#ef4444] text-white border-none p-[1rem_2rem] rounded-[10px] text-base font-semibold cursor-pointer"
                 >
                   Stop Recording
                 </button>
@@ -579,18 +435,10 @@ export default function AnalysePage({ token }) {
                   <audio
                     controls
                     src={recordedUrl}
-                    style={{
-                      width: "100%",
-                    }}
+                    className="w-full"
                   />
 
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: "1rem",
-                      width: "100%",
-                    }}
-                  >
+                  <div className="flex gap-4 w-full">
                     <button
                       onClick={
                         submitRecording
@@ -598,22 +446,7 @@ export default function AnalysePage({ token }) {
                       disabled={
                         isLoading
                       }
-                      style={{
-                        flex: 1,
-                        background:
-                          "#6366f1",
-                        color:
-                          "white",
-                        border:
-                          "none",
-                        padding:
-                          "1rem",
-                        borderRadius:
-                          "10px",
-                        fontWeight: 600,
-                        cursor:
-                          "pointer",
-                      }}
+                      className="flex-1 bg-[#6366f1] text-white border-none p-4 rounded-[10px] font-semibold cursor-pointer"
                     >
                       {isLoading
                         ? "Analysing..."
@@ -624,22 +457,7 @@ export default function AnalysePage({ token }) {
                       onClick={
                         discardRecording
                       }
-                      style={{
-                        flex: 1,
-                        background:
-                          "transparent",
-                        color:
-                          "#ef4444",
-                        border:
-                          "1px solid #ef4444",
-                        padding:
-                          "1rem",
-                        borderRadius:
-                          "10px",
-                        fontWeight: 600,
-                        cursor:
-                          "pointer",
-                      }}
+                      className="flex-1 bg-transparent text-[#ef4444] border border-[#ef4444] p-4 rounded-[10px] font-semibold cursor-pointer"
                     >
                       Discard
                     </button>
@@ -647,18 +465,7 @@ export default function AnalysePage({ token }) {
                 </>
               )}
           {error && (
-            <div
-              style={{
-                width: "100%",
-                boxSizing: "border-box",
-                marginTop: "1rem",
-                color: "#ef4444",
-                background: "#2b1111",
-                border: "1px solid #7f1d1d",
-                borderRadius: "10px",
-                padding: "1rem",
-              }}
-            >
+            <div className="w-full box-border mt-4 text-[#ef4444] bg-[#2b1111] border border-[#7f1d1d] rounded-[10px] p-4">
               {error}
             </div>
           )}
@@ -666,76 +473,29 @@ export default function AnalysePage({ token }) {
         )}
 
         {result && (
-          <div
-            style={{
-              marginTop: "2rem",
-              display: "flex",
-              flexDirection: "column",
-              gap: "1.5rem",
-            }}
-          >
-            <div
-              style={{
-                background: "#171717",
-                border: "1px solid #2d2d2d",
-                borderRadius: "16px",
-                padding: "1.5rem",
-              }}
-            >
-              <h2
-                style={{
-                  margin: 0,
-                  marginBottom: "1rem",
-                  fontSize: "1.2rem",
-                }}
-              >
+          <div className="mt-8 flex flex-col gap-6">
+            <div className="bg-[#171717] border border-[#2d2d2d] rounded-[16px] p-6">
+              <h2 className="m-0 mb-4 text-[1.2rem]">
                 Overall Result
               </h2>
 
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  flexWrap: "wrap",
-                  gap: "1rem",
-                }}
-              >
+              <div className="flex justify-between flex-wrap gap-4">
                 <div>
-                  <div
-                    style={{
-                      color: "#9ca3af",
-                      fontSize: "0.9rem",
-                    }}
-                  >
+                  <div className="text-[#9ca3af] text-[0.9rem]">
                     Dominant Emotion
                   </div>
 
-                  <div
-                    style={{
-                      fontSize: "1.5rem",
-                      fontWeight: 700,
-                    }}
-                  >
+                  <div className="text-[1.5rem] font-bold">
                     {result.emotion}
                   </div>
                 </div>
 
                 <div>
-                  <div
-                    style={{
-                      color: "#9ca3af",
-                      fontSize: "0.9rem",
-                    }}
-                  >
+                  <div className="text-[#9ca3af] text-[0.9rem]">
                     Confidence
                   </div>
 
-                  <div
-                    style={{
-                      fontSize: "1.5rem",
-                      fontWeight: 700,
-                    }}
-                  >
+                  <div className="text-[1.5rem] font-bold">
                     {typeof result.confidence === "number"
                       ? `${(result.confidence * 100).toFixed(2)}%`
                       : result.confidence}

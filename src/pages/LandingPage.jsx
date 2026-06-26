@@ -31,99 +31,29 @@ export default function LandingPage({ onGoogleLogin, onGuestLogin }) {
     const steps = ["1. Sign in", "2. Upload Audio", "3. Get Results"];
 
     return (
-        <div
-            style={{
-                minHeight: "100vh",
-                background: "linear-gradient(180deg, #0f0f0f 0%, #111827 100%)",
-                color: "white",
-                fontFamily:
-                    "Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
-            }}
-        >
+        <div className="min-h-screen bg-gradient-to-b from-[#0f0f0f] via-50% to-[#111827] text-white font-['Inter',_system-ui,_sans-serif]">
             {/* Hero Section */}
-            <section
-                style={{
-                    minHeight: "75vh",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    textAlign: "center",
-                    padding: "clamp(1rem, 4vw, 2rem)",
-                    position: "relative",
-                }}
-            >
-                <div
-                    style={{
-                        position: "absolute",
-                        width: "min(500px, 90vw)",
-                        height: "min(500px, 90vw)",
-                        background:
-                            "radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 70%)",
-                        filter: "blur(80px)",
-                        zIndex: 0,
-                    }}
-                />
+            <section className="min-h-[75vh] flex flex-col justify-center items-center text-center p-[clamp(1rem,4vw,2rem)] relative">
+                <div className="absolute w-[min(500px,90vw)] h-[min(500px,90vw)] bg-[radial-gradient(circle,rgba(99,102,241,0.18)_0%,transparent_70%)] blur-[80px] z-0" />
 
-                <div
-                    style={{
-                        position: "relative",
-                        zIndex: 1,
-                        maxWidth: "900px",
-                        width: "100%",
-                    }}
-                >
-                    <h1
-                        style={{
-                            fontSize: "clamp(3rem, 8vw, 5rem)",
-                            fontWeight: 800,
-                            marginBottom: "1.25rem",
-                            lineHeight: 1.05,
-                            paddingBottom: "1rem",
-                            background:
-                                "linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #6366f1 100%)",
-                            WebkitBackgroundClip: "text",
-                            WebkitTextFillColor: "transparent",
-                        }}
-                    >
+                <div className="relative z-10 max-w-[900px] w-full">
+                    <h1 className="text-[clamp(3rem,8vw,5rem)] font-extrabold mb-5 leading-[1.05] pb-4 bg-gradient-to-br from-white via-[#a5b4fc] via-50% to-[#6366f1] bg-clip-text text-transparent">
                         Speech Emotion Recognition
                     </h1>
 
-                    <p
-                        style={{
-                            fontSize: "clamp(1rem, 3vw, 1.25rem)",
-                            color: "#d1d5db",
-                            maxWidth: "700px",
-                            width: "100%",
-                            margin: "0 auto 2.5rem auto",
-                            lineHeight: 1.7,
-                        }}
-                    >
+                    <p className="text-[clamp(1rem,3vw,1.25rem)] text-[#d1d5db] max-w-[700px] w-full mx-auto mb-10 leading-[1.7]">
                         Understand the emotion behind every voice using AI.
                         Upload speech recordings and receive intelligent emotion
                         analysis powered by deep learning.
                     </p>
 
-                    <div
-                        style={{
-                            display: "flex",
-                            gap: "1rem",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            flexWrap: "wrap",
-                        }}
-                    >
+                    <div className="flex gap-[1rem] justify-center items-center flex-wrap">
                         <div
-                            style={{
-                                transform: googleHover
-                                    ? "translateY(-3px)"
-                                    : "translateY(0)",
-                                transition: "all 0.25s ease",
-                                boxShadow: googleHover
-                                    ? "0 15px 35px rgba(255,255,255,0.15)"
-                                    : "0 10px 25px rgba(255,255,255,0.08)",
-                                borderRadius: "12px",
-                            }}
+                            className={`transition-all duration-[0.25s] ease-in-out rounded-[12px] ${
+                                googleHover
+                                    ? "-translate-y-[3px] shadow-[0_15px_35px_rgba(255,255,255,0.15)]"
+                                    : "translate-y-0 shadow-[0_10px_25px_rgba(255,255,255,0.08)]"
+                            }`}
                             onMouseEnter={() => setGoogleHover(true)}
                             onMouseLeave={() => setGoogleHover(false)}
                         >
@@ -134,6 +64,9 @@ export default function LandingPage({ onGoogleLogin, onGuestLogin }) {
                                 onError={() => {
                                     console.error("Google Login Failed");
                                 }}
+                                // Forces the Google iframe button font-weight to be bold
+                                text="signin_with" 
+                                theme="filled_blue"
                             />
                         </div>
 
@@ -141,25 +74,11 @@ export default function LandingPage({ onGoogleLogin, onGuestLogin }) {
                             onClick={onGuestLogin}
                             onMouseEnter={() => setGuestHover(true)}
                             onMouseLeave={() => setGuestHover(false)}
-                            style={{
-                                background: guestHover
-                                    ? "#6366f1"
-                                    : "transparent",
-                                color: "white",
-                                border: "1px solid #6366f1",
-                                padding: "0.95rem 1.75rem",
-                                borderRadius: "12px",
-                                cursor: "pointer",
-                                fontSize: "1rem",
-                                fontWeight: 600,
-                                transition: "all 0.25s ease",
-                                transform: guestHover
-                                    ? "translateY(-3px)"
-                                    : "translateY(0)",
-                                boxShadow: guestHover
-                                    ? "0 15px 35px rgba(99,102,241,0.35)"
-                                    : "none",
-                            }}
+                            className={`text-white border border-[#6366f1] py-[0.95rem] px-[1.75rem] rounded-[12px] cursor-pointer text-[1rem] font-semibold transition-all duration-[0.25s] ease-in-out ${
+                                guestHover
+                                    ? "bg-[#6366f1] -translate-y-[3px] shadow-[0_15px_35px_rgba(99,102,241,0.35)]"
+                                    : "bg-transparent translate-y-0 shadow-none"
+                            }`}
                         >
                             Continue as Guest
                         </button>
@@ -168,71 +87,26 @@ export default function LandingPage({ onGoogleLogin, onGuestLogin }) {
             </section>
 
             {/* Features Section */}
-            <section
-                style={{
-                    padding: "clamp(3rem, 8vw, 5rem) clamp(1rem, 4vw, 2rem)",
-                    maxWidth: "1200px",
-                    margin: "0 auto",
-                }}
-            >
-                <h2
-                    style={{
-                        textAlign: "center",
-                        fontSize: "2.2rem",
-                        marginBottom: "3rem",
-                        fontWeight: 800,
-                        color: "#ffffff",
-                        textShadow: "0 0 20px rgba(99,102,241,0.35)",
-                    }}
-                >
+            <section className="py-[clamp(3rem,8vw,5rem)] px-[clamp(1rem,4vw,2rem)] max-w-[1200px] mx-auto">
+                <h2 className="text-center text-[2.2rem] mb-12 font-extrabold text-white drop-shadow-[0_0_20px_rgba(99,102,241,0.35)]">
                     Features
                 </h2>
 
-                <div
-                    style={{
-                        display: "grid",
-                        gridTemplateColumns:
-                            "repeat(auto-fit, minmax(280px, 1fr))",
-                        gap: "1.5rem",
-                    }}
-                >
+                <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-6">
                     {features.map((feature) => (
                         <div
                             key={feature.title}
-                            style={{
-                                background:
-                                    "linear-gradient(180deg, #18181b 0%, #131316 100%)",
-                                border: "1px solid #27272a",
-                                borderRadius: "20px",
-                                padding: "2rem",
-                                boxShadow: "0 20px 40px rgba(0,0,0,0.35)",
-                            }}
+                            className="bg-gradient-to-b from-[#18181b] to-[#131316] border border-[#27272a] rounded-[20px] p-8 shadow-[0_20px_40px_rgba(0,0,0,0.35)]"
                         >
-                            <div
-                                style={{
-                                    fontSize: "2.75rem",
-                                    marginBottom: "1rem",
-                                }}
-                            >
+                            <div className="text-[2.75rem] mb-4">
                                 {feature.icon}
                             </div>
 
-                            <h3
-                                style={{
-                                    fontSize: "1.2rem",
-                                    marginBottom: "0.75rem",
-                                    color: "#ffffff",
-                                }}
-                            >
+                            <h3 className="text-[1.2rem] mb-[0.75rem] text-white">
                                 {feature.title}
                             </h3>
 
-                            <p
-                                style={{
-                                    color: "#a1a1aa",
-                                    lineHeight: 1.7,
-                                }}
-                            >
+                            <p className="text-[#a1a1aa] leading-[1.7]">
                                 {feature.description}
                             </p>
                         </div>
@@ -241,51 +115,16 @@ export default function LandingPage({ onGoogleLogin, onGuestLogin }) {
             </section>
 
             {/* How It Works Section */}
-            <section
-                style={{
-                    padding:
-                        "clamp(3rem, 8vw, 4rem) clamp(1rem, 4vw, 2rem) 6rem",
-                    maxWidth: "1200px",
-                    margin: "0 auto",
-                }}
-            >
-                <h2
-                    style={{
-                        textAlign: "center",
-                        fontSize: "2.2rem",
-                        marginBottom: "3rem",
-                        fontWeight: 800,
-                        color: "#ffffff",
-                        textShadow: "0 0 20px rgba(99,102,241,0.35)",
-                    }}
-                >
+            <section className="pt-[clamp(3rem,8vw,4rem)] px-[clamp(1rem,4vw,2rem)] pb-24 max-w-[1200px] mx-auto">
+                <h2 className="text-center text-[2.2rem] mb-12 font-extrabold text-white drop-shadow-[0_0_20px_rgba(99,102,241,0.35)]">
                     How It Works
                 </h2>
 
-                <div
-                    style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        gap: "1.5rem",
-                        flexWrap: "wrap",
-                    }}
-                >
+                <div className="flex justify-center gap-6 flex-wrap">
                     {steps.map((step) => (
                         <div
                             key={step}
-                            style={{
-                                width: "100%",
-                                maxWidth: "320px",
-                                padding: "1.5rem 2rem",
-                                textAlign: "center",
-                                background:
-                                    "linear-gradient(180deg, #18181b 0%, #131316 100%)",
-                                border: "1px solid #27272a",
-                                borderRadius: "18px",
-                                fontSize: "1.1rem",
-                                fontWeight: 600,
-                                boxShadow: "0 15px 35px rgba(0,0,0,0.3)",
-                            }}
+                            className="w-full max-w-[320px] py-6 px-8 text-center bg-gradient-to-b from-[#18181b] to-[#131316] border border-[#27272a] rounded-[18px] text-[1.1rem] font-semibold shadow-[0_15px_35px_rgba(0,0,0,0.3)]"
                         >
                             {step}
                         </div>
