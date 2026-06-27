@@ -243,11 +243,8 @@ export default function AnalysePage({ token }) {
     try {
       const formData = new FormData();
 
-      formData.append(
-        "file",
-        recordedBlob,
-        "recording.webm"
-      );
+      const filename = `recording_${Date.now()}.webm`;
+      formData.append("file", recordedBlob, filename);
 
       const { data } = await axios.post(
         `${API_URL}/api/v1/predict/timeline`,
@@ -475,9 +472,16 @@ export default function AnalysePage({ token }) {
         {result && (
           <div className="mt-8 flex flex-col gap-6">
             <div className="bg-[#171717] border border-[#2d2d2d] rounded-[16px] p-6">
-              <h2 className="m-0 mb-4 text-[1.2rem]">
-                Overall Result
-              </h2>
+              <div className="flex items-center gap-3 mb-4">
+                <h2 className="m-0 text-[1.2rem]">
+                  Overall Result
+                </h2>
+                {result.source && (
+                  <span className="whitespace-pre text-[0.75rem] font-bold tracking-wide px-3 py-1 rounded-full bg-[rgba(99,102,241,0.1)] text-[#38c2cc] border border-[rgba(99,102,241,0.2)]">
+                    {result.source === "cache" ? "FROM  CACHE" : "FROM  MODEL"}
+                  </span>
+                )}
+              </div>
 
               <div className="flex justify-between flex-wrap gap-4">
                 <div>
